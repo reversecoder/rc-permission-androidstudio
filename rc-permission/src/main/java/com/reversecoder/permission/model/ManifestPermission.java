@@ -9,13 +9,21 @@ import java.util.UUID;
 public class ManifestPermission {
 
     private String name;
-    private boolean isGranted;
+    private PermissionRequestStatus permissionRequestStatus;
     private String uuid;
 
-    public ManifestPermission(String name, boolean isGranted) {
+    public ManifestPermission(String name, PermissionRequestStatus permissionRequestStatus) {
         this.name = name;
-        this.isGranted = isGranted;
+        this.permissionRequestStatus = permissionRequestStatus;
         uuid = UUID.randomUUID().toString();
+    }
+
+    public PermissionRequestStatus getPermissionRequestStatus() {
+        return permissionRequestStatus;
+    }
+
+    public void setPermissionRequestStatus(PermissionRequestStatus permissionRequestStatus) {
+        this.permissionRequestStatus = permissionRequestStatus;
     }
 
     public String getName() {
@@ -24,14 +32,6 @@ public class ManifestPermission {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isGranted() {
-        return isGranted;
-    }
-
-    public void setGranted(boolean granted) {
-        isGranted = granted;
     }
 
     public String getUuid() {

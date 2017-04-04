@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 
 import com.reversecoder.permission.model.ManifestPermission;
+import com.reversecoder.permission.model.PermissionRequestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ public class PermissionUtil {
             ManifestPermission manifestPermission;
             for (int i = 0; i < pi.requestedPermissions.length; i++) {
                 if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                    manifestPermission = new ManifestPermission(pi.requestedPermissions[i],true);
+                    manifestPermission = new ManifestPermission(pi.requestedPermissions[i], PermissionRequestStatus.PERMISSION_GRANTED);
                     granted.add(manifestPermission);
                 }
             }
@@ -41,7 +42,11 @@ public class PermissionUtil {
             permissions = new ArrayList<String>(Arrays.asList(pi.requestedPermissions));
             ManifestPermission manifestPermission;
             for(int i=0;i<permissions.size();i++){
-                manifestPermission = new ManifestPermission(permissions.get(i),isPermissionGranted(context,permissions.get(i)));
+                if(isPermissionGranted(context,permissions.get(i))){
+                    manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.PERMISSION_GRANTED);
+                }else{
+                    manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.PERMISSION_DENIED_ONCE);
+                }
                 mPermissions.add(manifestPermission);
             }
             return mPermissions;

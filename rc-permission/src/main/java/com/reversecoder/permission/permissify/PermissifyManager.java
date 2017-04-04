@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.reversecoder.permission.model.PermissionRequestStatus;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -21,12 +23,12 @@ public class PermissifyManager {
     private static final String SAVE_INSTANCE_KEY_PENDING_PERMISSION_CALL = "pendingPermissionCalls";
     private static final String TAG = "Permissify";
 
-    /**
-     * Status that indicates the current state of permission request
-     */
-    public enum CallRequestStatus {
-        PERMISSION_GRANTED, PERMISSION_DENIED_ONCE, PERMISSION_DENIED_FOREVER, SHOW_PERMISSION_RATIONALE
-    }
+//    /**
+//     * Status that indicates the current state of permission request
+//     */
+//    public enum CallRequestStatus {
+//        PERMISSION_GRANTED, PERMISSION_DENIED_ONCE, PERMISSION_DENIED_FOREVER, SHOW_PERMISSION_RATIONALE
+//    }
 
     private PermissifyActivity activity;
     private LifecycleHandler lifecycleHandler = new LifecycleHandler();
@@ -126,7 +128,7 @@ public class PermissifyManager {
         callOptionsInitializer.initializeWithDefault(activity, pendingCall.internalData.permission, pendingCall.options, permissifyConfig);
 
         if (hasPermission(pendingCall.internalData.permission)) {
-            callback.onCallWithPermissionResult(pendingCall.internalData.callId, CallRequestStatus.PERMISSION_GRANTED);
+            callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.PERMISSION_GRANTED);
         } else {
             pendingPermissionCalls.put(pendingCall.internalData.callId, pendingCall);
 
@@ -134,7 +136,7 @@ public class PermissifyManager {
                 if (pendingCall.options.showRationaleDialog()) {
                     PermissionRationaleDialogFragment.showDialog(activity.getSupportFragmentManager(), pendingCall);
                 }
-                callback.onCallWithPermissionResult(pendingCall.internalData.callId, CallRequestStatus.SHOW_PERMISSION_RATIONALE);
+                callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.SHOW_PERMISSION_RATIONALE);
             } else {
                 ActivityCompat.requestPermissions(activity, new String[]{ pendingCall.internalData.permission }, pendingCall.internalData.callId);
             }
@@ -189,7 +191,7 @@ public class PermissifyManager {
          * @param callId - unique identifier that is associated with this permission call
          * @param status - current permission request status
          */
-        void onCallWithPermissionResult(int callId, CallRequestStatus status);
+        public void onCallWithPermissionResult(int callId, PermissionRequestStatus status);
     }
 
     private static class PermissionCallInternalData implements Serializable {
@@ -238,8 +240,8 @@ public class PermissifyManager {
                 }
 
                 callback.onCallWithPermissionResult(requestCode,
-                    granted ? CallRequestStatus.PERMISSION_GRANTED :
-                        showRationale ? CallRequestStatus.PERMISSION_DENIED_ONCE : CallRequestStatus.PERMISSION_DENIED_FOREVER);
+                    granted ? PermissionRequestStatus.PERMISSION_GRANTED :
+                        showRationale ? PermissionRequestStatus.PERMISSION_DENIED_ONCE : PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
             }
         }
 

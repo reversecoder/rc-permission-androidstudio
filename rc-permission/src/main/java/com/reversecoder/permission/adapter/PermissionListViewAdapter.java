@@ -140,7 +140,7 @@ public class PermissionListViewAdapter extends BaseAdapter {
         if(getPermission(uuid)!=null){
             mData.get(getPermissionPosition(uuid)).setPermissionRequestStatus(permissionRequestStatus);
             ManifestPermission permission=mData.get(getPermissionPosition(uuid));
-            SessionManager.setStringSetting(mContext,permission.getFullName(),permission.getPermissionRequestStatus().name());
+            SessionManager.setStringSetting(mContext,permission.getFullName(),permissionRequestStatus.name());
             notifyDataSetChanged();
             return permission;
         }

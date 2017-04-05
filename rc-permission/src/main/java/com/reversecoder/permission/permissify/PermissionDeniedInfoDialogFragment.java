@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -17,8 +18,9 @@ import com.reversecoder.permission.R;
 
 public class PermissionDeniedInfoDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static final String TAG = "Permissify";
+    public static final String TAG = "Permissify";
     private static final String ARG_PENDING_CALL = "pendingCall";
+    public static final int REQUEST_CODE_APPLICATION_DETAILS_SETTINGS=4200;
 
     @NonNull
     @Override
@@ -33,8 +35,9 @@ public class PermissionDeniedInfoDialogFragment extends DialogFragment implement
     @Override
     public void onClick(DialogInterface dialog, int which) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getContext().getPackageName(), null));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        getActivity().startActivityForResult(intent,REQUEST_CODE_APPLICATION_DETAILS_SETTINGS);
     }
 
     private String getDialogMessage(PermissionCallOptions callOptions) {

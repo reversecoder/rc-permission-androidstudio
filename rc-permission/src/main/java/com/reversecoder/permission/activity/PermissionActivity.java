@@ -1,9 +1,8 @@
 package com.reversecoder.permission.activity;
 
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.reversecoder.permission.R;
 import com.reversecoder.permission.adapter.PermissionListViewAdapter;
@@ -13,6 +12,7 @@ import com.reversecoder.permission.model.onPermissionItemClickListener;
 import com.reversecoder.permission.permissify.PermissifyActivity;
 import com.reversecoder.permission.permissify.PermissionCallOptions;
 import com.reversecoder.permission.util.PermissionUtil;
+import com.reversecoder.permission.util.SessionManager;
 
 import java.util.ArrayList;
 
@@ -24,14 +24,13 @@ public class PermissionActivity extends PermissifyActivity {
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override
         public void getCurrentPermission(ManifestPermission permission) {
-//            Toast.makeText(PermissionActivity.this,permission.getName()+"\n"+permission.getUuid(),Toast.LENGTH_SHORT).show();
+//            Toast.makeText(PermissionActivity.this,permission.getFullName()+"\n"+permission.getUuid(),Toast.LENGTH_SHORT).show();
 
             //call to permissify using without dialogs, but with custom behavior (handled in onCallWithPermissionResult)
-            getPermissifyManager().callWithPermission(PermissionActivity.this, permission.getUuid(), permission.getName(),
-                    new PermissionCallOptions.Builder()
-                            .withDefaultDenyDialog(false)
-                            .withRationaleEnabled(false)
-                            .build());
+            getPermissifyManager().callWithPermission(PermissionActivity.this, permission.getUuid(), permission.getFullName(),            new PermissionCallOptions.Builder()
+                    .withDefaultDenyDialog(true)
+                    .withDefaultRationaleDialog(true)
+                    .build());
         }
     };
 
@@ -42,13 +41,15 @@ public class PermissionActivity extends PermissifyActivity {
         setContentView(R.layout.activity_permission);
 
         listViewPermission = (ListView) findViewById(R.id.listview_permission);
-        ArrayList<ManifestPermission> data = PermissionUtil.getAllPermissions(PermissionActivity.this, "com.reversecoder.permission.demo");
+        ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionActivity.this, "com.reversecoder.permission.demo");
         permissionListViewAdapter = new PermissionListViewAdapter(PermissionActivity.this, data, permissionItemClickListener);
         listViewPermission.setAdapter(permissionListViewAdapter);
 
-        if(permissionListViewAdapter.isActionTakenForPermissions()){
-            finish();
-        }
+//        if(permissionListViewAdapter.isActionTakenForPermissions()){
+//            finish();
+//        }
+
+
     }
 
     @Override
@@ -61,15 +62,48 @@ public class PermissionActivity extends PermissifyActivity {
             permissionListViewAdapter.updatePermissionStatus(callId,status);
         }
 
-        if(permissionListViewAdapter.isActionTakenForPermissions()){
-            finish();
-        }
+//        if(permissionListViewAdapter.isActionTakenForPermissions()){
+//            finish();
+//        }
+
     }
 
     public void onResume(){
         super.onResume();
 
         if(permissionListViewAdapter !=null){
+            /*
+            * test start here
+            * */
+            ArrayList<ManifestPermission> currentListData=permissionListViewAdapter.getPermissions();
+            ArrayList<ManifestPermission> currentAppData = PermissionUtil.getAllPermissions(PermissionActivity.this, "com.reversecoder.permission.demo");
+
+            for(int i=0;i<currentListData.size();i++){
+                Log.d("currentListData "+currentListData.get(i).getShortName()+" is: ",currentListData.get(i).getPermissionRequestStatus().name());
+            }
+
+            for(int i=0;i<currentAppData.size();i++){
+                Log.d("currentAppData "+currentAppData.get(i).getShortName()+" is: ",currentAppData.get(i).getPermissionRequestStatus().name());
+            }
+
+//            for(int i=0;i<currentAppData.size();i++){
+//                if(!SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()).equalsIgnoreCase("")){
+//                    switch (currentAppData.get(i).getPermissionRequestStatus()){
+//                        case UNKNOWN:
+//                            permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(),currentAppData.get(i).getPermissionRequestStatus());
+//                            break;
+//                        case PERMISSION_GRANTED:
+//                            permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(),PermissionRequestStatus.PERMISSION_GRANTED);
+//                            break;
+//                    }
+//                }
+//            }
+
+
+
+              /*
+            * test end here
+            * */
             permissionListViewAdapter.notifyDataSetChanged();
         }
     }

@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.PermissionChecker;
+import android.util.Log;
 
 import com.reversecoder.permission.activity.PermissionActivity;
 import com.reversecoder.permission.model.ManifestPermission;
@@ -49,6 +50,28 @@ public class PermissionUtil {
                     manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.PERMISSION_GRANTED);
                 }else{
                     manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.UNKNOWN);
+                }
+                mPermissions.add(manifestPermission);
+            }
+            return mPermissions;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public static ArrayList<ManifestPermission> getAllCustomizedPermissions(Context context, String appPackage) {
+        ArrayList<String> permissions;
+        ArrayList<ManifestPermission> mPermissions=new ArrayList<ManifestPermission>();
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
+            permissions = new ArrayList<String>(Arrays.asList(pi.requestedPermissions));
+            ManifestPermission manifestPermission;
+            for(int i=0;i<permissions.size();i++){
+                if(!SessionManager.getStringSetting(context,permissions.get(i)).equalsIgnoreCase("")){
+                    manifestPermission = new ManifestPermission(permissions.get(i),EnumManager.getInstance(SessionManager.getStringSetting(context,permissions.get(i)),PermissionRequestStatus.class));
+                }else{
+                    manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.UNKNOWN);
+                    SessionManager.setStringSetting(context,permissions.get(i),PermissionRequestStatus.UNKNOWN.name());
                 }
                 mPermissions.add(manifestPermission);
             }

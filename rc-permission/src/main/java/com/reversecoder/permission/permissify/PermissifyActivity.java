@@ -29,8 +29,8 @@ public class PermissifyActivity extends AppCompatActivity implements PermissifyM
 
         PermissifyConfig permissifyConfig = new PermissifyConfig.Builder()
                 .withDefaultTextForPermissions(new HashMap<String, DialogText>() {{
-//                    put(Manifest.permission_group.LOCATION, new DialogText(R.string.location_rationale, R.string.location_deny_dialog));
-//                    put(Manifest.permission_group.CONTACTS, new DialogText(R.string.camera_rationale, R.string.camera_deny_dialog));
+                    put(Manifest.permission_group.LOCATION, new DialogText(R.string.location_rationale, R.string.location_deny_dialog));
+                    put(Manifest.permission_group.CONTACTS, new DialogText(R.string.camera_rationale, R.string.camera_deny_dialog));
                 }})
                 .build();
 

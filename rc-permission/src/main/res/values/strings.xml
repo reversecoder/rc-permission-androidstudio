@@ -8,7 +8,7 @@
     <string name="permission_status_unknown">Unknown</string>
     <string name="permission_status_denied">Denied</string>
     <string name="permission_status_denied_forever">Denied Forever</string>
-    <string name="permission_status_rationale">Show Rationale</string>
+    <string name="permission_status_rationale">Rationale</string>
 
     <string name="location_rationale">The location permission is necessary to locate hotels near you</string>
     <string name="location_deny_dialog">Without location permission we can\'t show hotels near you</string>

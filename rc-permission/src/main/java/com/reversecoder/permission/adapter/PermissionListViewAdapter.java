@@ -13,6 +13,7 @@ import com.reversecoder.permission.R;
 import com.reversecoder.permission.model.ManifestPermission;
 import com.reversecoder.permission.model.PermissionRequestStatus;
 import com.reversecoder.permission.model.onPermissionItemClickListener;
+import com.reversecoder.permission.util.SessionManager;
 
 import java.util.ArrayList;
 
@@ -50,8 +51,13 @@ public class PermissionListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    public ArrayList<ManifestPermission> getData(){
+    public ArrayList<ManifestPermission> getPermissions(){
         return mData;
+    }
+
+    public void setPermissions(ArrayList<ManifestPermission> permissions){
+        mData=permissions;
+        notifyDataSetChanged();
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -74,7 +80,7 @@ public class PermissionListViewAdapter extends BaseAdapter {
     public void updateRowView(TextView permissionName, TextView statusText, View rowView, int position) {
         rowView.setBackgroundColor(getStatusColor(position));
         statusText.setText(getStatusText(position));
-        permissionName.setText(getItem(position).getName().replace("android.permission.", ""));
+        permissionName.setText(getItem(position).getShortName());
     }
 
 
@@ -88,7 +94,7 @@ public class PermissionListViewAdapter extends BaseAdapter {
                 return mContext.getString(R.string.permission_status_denied);
             case PERMISSION_DENIED_FOREVER:
                 return mContext.getString(R.string.permission_status_denied_forever);
-            case SHOW_PERMISSION_RATIONALE:
+            case PERMISSION_RATIONALE:
                 return mContext.getString(R.string.permission_status_rationale);
             default:
                 return mContext.getString(R.string.permission_status_unknown);
@@ -106,7 +112,7 @@ public class PermissionListViewAdapter extends BaseAdapter {
                 return ContextCompat.getColor(mContext, R.color.permission_status_denied_once);
             case PERMISSION_DENIED_FOREVER:
                 return ContextCompat.getColor(mContext, R.color.permission_status_denied_forever);
-            case SHOW_PERMISSION_RATIONALE:
+            case PERMISSION_RATIONALE:
                 return ContextCompat.getColor(mContext, R.color.permission_status_rationale);
         }
         return ContextCompat.getColor(mContext, R.color.permission_request_is_not_sent);
@@ -133,7 +139,10 @@ public class PermissionListViewAdapter extends BaseAdapter {
     public ManifestPermission updatePermissionStatus(int uuid, PermissionRequestStatus permissionRequestStatus){
         if(getPermission(uuid)!=null){
             mData.get(getPermissionPosition(uuid)).setPermissionRequestStatus(permissionRequestStatus);
+            ManifestPermission permission=mData.get(getPermissionPosition(uuid));
+            SessionManager.setStringSetting(mContext,permission.getFullName(),permission.getPermissionRequestStatus().name());
             notifyDataSetChanged();
+            return permission;
         }
         return null;
     }

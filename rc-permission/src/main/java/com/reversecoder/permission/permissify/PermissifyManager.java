@@ -27,7 +27,7 @@ public class PermissifyManager {
 //     * Status that indicates the current state of permission request
 //     */
 //    public enum CallRequestStatus {
-//        PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_DENIED_FOREVER, SHOW_PERMISSION_RATIONALE
+//        PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_DENIED_FOREVER, PERMISSION_RATIONALE
 //    }
 
     private PermissifyActivity activity;
@@ -136,7 +136,7 @@ public class PermissifyManager {
                 if (pendingCall.options.showRationaleDialog()) {
                     PermissionRationaleDialogFragment.showDialog(activity.getSupportFragmentManager(), pendingCall);
                 }
-                callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.SHOW_PERMISSION_RATIONALE);
+                callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.PERMISSION_RATIONALE);
             } else {
                 ActivityCompat.requestPermissions(activity, new String[]{ pendingCall.internalData.permission }, pendingCall.internalData.callId);
             }

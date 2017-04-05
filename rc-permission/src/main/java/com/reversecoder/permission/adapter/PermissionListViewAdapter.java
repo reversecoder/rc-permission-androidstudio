@@ -10,8 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.reversecoder.permission.R;
-import com.reversecoder.permission.activity.PermissionActivity;
 import com.reversecoder.permission.model.ManifestPermission;
+import com.reversecoder.permission.model.PermissionRequestStatus;
+import com.reversecoder.permission.model.onPermissionItemClickListener;
 
 import java.util.ArrayList;
 
@@ -24,10 +25,16 @@ public class PermissionListViewAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<ManifestPermission> mData;
     private static LayoutInflater inflater = null;
+    private onPermissionItemClickListener mPermissionItemClickListener;
 
-    public PermissionListViewAdapter(Context context, ArrayList<ManifestPermission> data) {
+    public void setPermissionItemClickListener(onPermissionItemClickListener permissionItemClickListener) {
+        this.mPermissionItemClickListener = permissionItemClickListener;
+    }
+
+    public PermissionListViewAdapter(Context context, ArrayList<ManifestPermission> data, onPermissionItemClickListener permissionItemClickListener) {
         mContext = context;
         mData = data;
+        this.mPermissionItemClickListener = permissionItemClickListener;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -43,17 +50,22 @@ public class PermissionListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public ArrayList<ManifestPermission> getData(){
+        return mData;
+    }
+
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View vi = convertView;
-        if (convertView == null)
+        if (convertView == null) {
             vi = inflater.inflate(R.layout.list_row_permission, null);
+        }
         TextView tvPermissionName = (TextView) vi.findViewById(R.id.tv_permission_name);
         TextView tvPermissionStatus = (TextView) vi.findViewById(R.id.tv_permission_status);
         updateRowView(tvPermissionName, tvPermissionStatus, vi, position);
         vi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((PermissionActivity) mContext).setContactPermission();
+                mPermissionItemClickListener.getCurrentPermission(getItem(position));
             }
         });
         return vi;
@@ -62,38 +74,78 @@ public class PermissionListViewAdapter extends BaseAdapter {
     public void updateRowView(TextView permissionName, TextView statusText, View rowView, int position) {
         rowView.setBackgroundColor(getStatusColor(position));
         statusText.setText(getStatusText(position));
-        permissionName.setText(getItem(position).getName().replace("android.permission.",""));
+        permissionName.setText(getItem(position).getName().replace("android.permission.", ""));
     }
 
 
     public String getStatusText(int position) {
-        String statusText = "";
         switch (getItem(position).getPermissionRequestStatus()) {
+            case UNKNOWN:
+                return mContext.getString(R.string.permission_status_unknown);
             case PERMISSION_GRANTED:
-                statusText = mContext.getString(R.string.permission_status_granted);
-            case PERMISSION_DENIED_ONCE:
-                statusText = mContext.getString(R.string.permission_status_denied_once);
+                return mContext.getString(R.string.permission_status_granted);
+            case PERMISSION_DENIED:
+                return mContext.getString(R.string.permission_status_denied);
             case PERMISSION_DENIED_FOREVER:
-                statusText = mContext.getString(R.string.permission_status_denied_forever);
+                return mContext.getString(R.string.permission_status_denied_forever);
             case SHOW_PERMISSION_RATIONALE:
-                statusText = mContext.getString(R.string.permission_status_rationale);
+                return mContext.getString(R.string.permission_status_rationale);
+            default:
+                return mContext.getString(R.string.permission_status_unknown);
         }
-        return statusText;
     }
 
     @ColorInt
     public int getStatusColor(int position) {
         switch (getItem(position).getPermissionRequestStatus()) {
+            case UNKNOWN:
+                return ContextCompat.getColor(mContext, R.color.permission_request_is_not_sent);
             case PERMISSION_GRANTED:
                 return ContextCompat.getColor(mContext, R.color.permission_status_granted);
-            case PERMISSION_DENIED_ONCE:
+            case PERMISSION_DENIED:
                 return ContextCompat.getColor(mContext, R.color.permission_status_denied_once);
             case PERMISSION_DENIED_FOREVER:
                 return ContextCompat.getColor(mContext, R.color.permission_status_denied_forever);
             case SHOW_PERMISSION_RATIONALE:
                 return ContextCompat.getColor(mContext, R.color.permission_status_rationale);
-            default:
-                return ContextCompat.getColor(mContext, R.color.permission_status_rationale);
         }
+        return ContextCompat.getColor(mContext, R.color.permission_request_is_not_sent);
+    }
+
+    public ManifestPermission getPermission(int uuid){
+        for(ManifestPermission d : mData){
+            if(d.getUuid()==uuid){
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public int getPermissionPosition(int uuid){
+        for(int i=0;i<mData.size();i++){
+            if(mData.get(i).getUuid()==uuid){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public ManifestPermission updatePermissionStatus(int uuid, PermissionRequestStatus permissionRequestStatus){
+        if(getPermission(uuid)!=null){
+            mData.get(getPermissionPosition(uuid)).setPermissionRequestStatus(permissionRequestStatus);
+            notifyDataSetChanged();
+        }
+        return null;
+    }
+
+    public boolean isActionTakenForPermissions(){
+        for(ManifestPermission d : mData){
+            if(d.getPermissionRequestStatus()!= PermissionRequestStatus.UNKNOWN){
+                continue;
+            }else{
+                return false;
+            }
+        }
+        return true;
     }
 }

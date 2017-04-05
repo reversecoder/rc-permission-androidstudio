@@ -27,7 +27,7 @@ public class PermissifyManager {
 //     * Status that indicates the current state of permission request
 //     */
 //    public enum CallRequestStatus {
-//        PERMISSION_GRANTED, PERMISSION_DENIED_ONCE, PERMISSION_DENIED_FOREVER, SHOW_PERMISSION_RATIONALE
+//        PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_DENIED_FOREVER, SHOW_PERMISSION_RATIONALE
 //    }
 
     private PermissifyActivity activity;
@@ -241,7 +241,7 @@ public class PermissifyManager {
 
                 callback.onCallWithPermissionResult(requestCode,
                     granted ? PermissionRequestStatus.PERMISSION_GRANTED :
-                        showRationale ? PermissionRequestStatus.PERMISSION_DENIED_ONCE : PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
+                        showRationale ? PermissionRequestStatus.PERMISSION_DENIED : PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
             }
         }
 

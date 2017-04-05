@@ -1,6 +1,6 @@
 package com.reversecoder.permission.model;
 
-import java.util.UUID;
+import java.util.Random;
 
 /**
  * Created by rashed on 4/4/17.
@@ -9,13 +9,13 @@ import java.util.UUID;
 public class ManifestPermission {
 
     private String name;
-    private PermissionRequestStatus permissionRequestStatus;
-    private String uuid;
+    private PermissionRequestStatus permissionRequestStatus = PermissionRequestStatus.UNKNOWN;
+    private int uuid;
 
     public ManifestPermission(String name, PermissionRequestStatus permissionRequestStatus) {
         this.name = name;
         this.permissionRequestStatus = permissionRequestStatus;
-        uuid = UUID.randomUUID().toString();
+        uuid = getRandomNumber();
     }
 
     public PermissionRequestStatus getPermissionRequestStatus() {
@@ -34,11 +34,18 @@ public class ManifestPermission {
         this.name = name;
     }
 
-    public String getUuid() {
+    public int getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUuid(int uuid) {
         this.uuid = uuid;
+    }
+
+
+    private int getRandomNumber() {
+        Random r = new Random();
+        int a = r.nextInt((1000 - 100)) + 100;
+        return a;
     }
 }

@@ -1,16 +1,19 @@
 package com.reversecoder.permission.util;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+import android.os.Build;
+import android.support.v4.content.PermissionChecker;
 
+import com.reversecoder.permission.activity.PermissionActivity;
 import com.reversecoder.permission.model.ManifestPermission;
 import com.reversecoder.permission.model.PermissionRequestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Created by rashed on 4/4/17.
@@ -45,7 +48,7 @@ public class PermissionUtil {
                 if(isPermissionGranted(context,permissions.get(i))){
                     manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.PERMISSION_GRANTED);
                 }else{
-                    manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.PERMISSION_DENIED_ONCE);
+                    manifestPermission = new ManifestPermission(permissions.get(i),PermissionRequestStatus.UNKNOWN);
                 }
                 mPermissions.add(manifestPermission);
             }
@@ -55,32 +58,35 @@ public class PermissionUtil {
         return null;
     }
 
-    public static boolean hasPermission(Context context, String permission) {
+    public static int getTargetSdkVersion(Context context){
         try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-            if (info.requestedPermissions != null) {
-                for (String p : info.requestedPermissions) {
-                    if (p.equals(permission)) {
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
+            final PackageInfo info = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), 0);
+            return info.applicationInfo.targetSdkVersion;
+        } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        return false;
+        return -1;
     }
 
-    public static boolean isPermissionGranted(Context context, String permission) {
-        try {
-            if ((ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED)) {
-                return true;
-            }
+    public static boolean isPermissionGranted(Context context,String permission) {
+        // For Android < Android M, self permissions are always granted.
+        boolean result = true;
 
-        } catch (Exception e) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (getTargetSdkVersion(context) >= Build.VERSION_CODES.M) {
+                // targetSdkVersion >= Android M, we can
+                // use Context#checkSelfPermission
+                result = context.checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
+            } else {
+                // targetSdkVersion < Android M, we have to use PermissionChecker
+                result = PermissionChecker.checkSelfPermission(context, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
         }
-        return false;
+
+        return result;
     }
 }

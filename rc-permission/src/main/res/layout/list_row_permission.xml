@@ -11,7 +11,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="15dp"
         android:gravity="center_vertical"
-        android:text="sdfsdfsdf"
+        android:text=""
         android:textColor="@color/colorPrimary"
         android:textSize="18dp" />
 
@@ -21,7 +21,7 @@
         android:layout_height="30dp"
         android:layout_marginLeft="15dp"
         android:gravity="center_vertical"
-        android:text="sdfsdfsdf"
+        android:text="@string/permission_status_unknown"
         android:textColor="@color/colorPrimary"
         android:textSize="14dp" />
 

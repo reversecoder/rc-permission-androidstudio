@@ -6,7 +6,7 @@
 
     <string name="permission_status_granted">Granted</string>
     <string name="permission_status_unknown">Unknown</string>
-    <string name="permission_status_denied_once">Denied Once</string>
+    <string name="permission_status_denied">Denied</string>
     <string name="permission_status_denied_forever">Denied Forever</string>
     <string name="permission_status_rationale">Show Rationale</string>
 

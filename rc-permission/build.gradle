@@ -31,3 +31,43 @@ dependencies {
     compile 'com.android.support:design:25.3.0'
     testCompile 'junit:junit:4.12'
 }
+
+/*
+*
+* release
+*
+* */
+
+apply plugin: 'maven'
+
+dependencies {
+    deployLibrary "ar.com.synergian:wagon-git:0.3.0"
+}
+
+repositories {
+    maven {
+        url "https://raw.github.com/synergian/wagon-git/releases"
+    }
+}
+
+configurations {
+    deployLibrary
+}
+
+uploadArchives {
+
+    repositories.mavenDeployer {
+        configuration = configurations.deployLibrary
+        repository(url: 'git:releases://git@github.com:reversecoder/rc-permission-androidstudio.git')
+        snapshotRepository(url: 'git:snapshots://git@github.com:reversecoder/rc-permission-androidstudio.git')
+
+        uniqueVersion = true
+
+        pom.project {
+            groupId = 'rc-permission-androidstudio'
+            version = '1.0.0-SNAPSHOT'
+            artifactId = 'rc-permission'
+            packaging 'aar'
+        }
+    }
+}

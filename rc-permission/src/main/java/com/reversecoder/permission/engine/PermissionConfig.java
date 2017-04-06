@@ -1,19 +1,19 @@
-package com.reversecoder.permission.permissify;
-
-import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+package com.reversecoder.permission.engine;
 
 import com.reversecoder.permission.R;
+import com.reversecoder.permission.dialog.DialogText;
+import com.reversecoder.permission.dialog.PermissionDeniedInfoDialogFragment;
+import com.reversecoder.permission.dialog.PermissionRationaleDialogFragment;
+import com.reversecoder.permission.model.AlertDialogFactory;
 
 import java.util.HashMap;
 
 /**
- * Config for Permissify Library
+ * @author Md. Rashsadul Alam
  */
-public class PermissifyConfig {
+public class PermissionConfig {
 
-    private static PermissifyConfig sInstance;
+    private static PermissionConfig sInstance;
 
     private PermissionCallOptions defaultPermissionCallOptions;
     private HashMap<String, DialogText> defaultTextForPermissions;
@@ -21,70 +21,47 @@ public class PermissifyConfig {
     private AlertDialogFactory rationaleDialogFactory;
     private AlertDialogFactory denyDialogFactory;
 
-    static PermissifyConfig get() {
+    public static PermissionConfig get() {
         if (sInstance == null) {
-            throw new RuntimeException("Permissify is not initialized");
+            throw new RuntimeException("PermissionConfig is not initialized");
         }
 
         return sInstance;
     }
 
-    private PermissifyConfig() {
+    private PermissionConfig() {
     }
 
-    /**
-     * Builder for creating PermissifyConfig instance
-     */
     public static class Builder {
 
-        private PermissifyConfig instance = new PermissifyConfig();
+        private PermissionConfig instance = new PermissionConfig();
 
-        /**
-         * Sets options that are used by default when requesting for permission
-         *
-         * @param callOptions
-         */
         public Builder withDefaultPermissionCallOptions(PermissionCallOptions callOptions) {
             instance.defaultPermissionCallOptions = callOptions;
             return this;
         }
 
-        /**
-         * Sets map that matches every permission group {@link android.Manifest.permission_group} that is used in the app with texts that is used in dialogs
-         */
         public Builder withDefaultTextForPermissions(HashMap<String, DialogText> wording) {
             instance.defaultTextForPermissions = wording;
             return this;
         }
 
-        /**
-         * Sets dialog texts that will be used in case no match in map {@link #withDefaultTextForPermissions}
-         */
         public Builder withPermissionTextFallback(DialogText dialogText) {
             instance.permissionTextFallback = dialogText;
             return this;
         }
 
-        /**
-         * Sets custom AlertDialogFactory that can be used to customize Rationale dialog
-         */
         public Builder withDialogRationaleDialogFactory(AlertDialogFactory factory) {
             instance.rationaleDialogFactory = factory;
             return this;
         }
 
-        /**
-         * Sets custom AlertDialogFactory that can be used to customize Deny dialog
-         */
         public Builder withDenyDialogFactory(AlertDialogFactory factory) {
             instance.denyDialogFactory = factory;
             return this;
         }
 
-        /**
-         * Builds instance of PermissifyConfig
-         */
-        public PermissifyConfig build() {
+        public PermissionConfig build() {
             if (instance.denyDialogFactory == null) {
                 instance.denyDialogFactory = PermissionDeniedInfoDialogFragment.getDefaultDialogFactory();
             }
@@ -95,9 +72,9 @@ public class PermissifyConfig {
 
             if (instance.defaultPermissionCallOptions == null) {
                 instance.defaultPermissionCallOptions = new PermissionCallOptions.Builder()
-                    .withDefaultDenyDialog(true)
-                    .withDefaultRationaleDialog(true)
-                    .build();
+                        .withDefaultDenyDialog(true)
+                        .withDefaultRationaleDialog(true)
+                        .build();
             }
 
             if (instance.permissionTextFallback == null) {
@@ -108,13 +85,8 @@ public class PermissifyConfig {
         }
     }
 
-    /**
-     * Initializes Permissify config
-     *
-     * @param permissifyConfig - instance of PermissifyConfig that is returned from {@link Builder}
-     */
-    public static void initDefault(PermissifyConfig permissifyConfig) {
-        sInstance = permissifyConfig;
+    public static void initDefault(PermissionConfig permissionConfig) {
+        sInstance = permissionConfig;
     }
 
     PermissionCallOptions getDefaultPermissionCallOptions() {
@@ -129,28 +101,12 @@ public class PermissifyConfig {
         return defaultTextForPermissions;
     }
 
-    AlertDialogFactory getRationaleDialogFactory() {
+    public AlertDialogFactory getRationaleDialogFactory() {
         return rationaleDialogFactory;
     }
 
-    AlertDialogFactory getDenyDialogFactory() {
+    public AlertDialogFactory getDenyDialogFactory() {
         return denyDialogFactory;
-    }
-
-    /**
-     * Class that produces instances of AlertDialogs that are used as a content for Rationale & Deny dialogs {@link com.reversecoder.permission.permissify.DialogText}
-     */
-    public interface AlertDialogFactory {
-
-        /**
-         * Creates alert dialogs
-         *
-         * @param context         - app context
-         * @param dialogMsg       - message that is related with requested permission
-         * @param onClickListener - listener that should be attaches to dialog buttons
-         * @return - custom AlertDialog
-         */
-        AlertDialog createDialog(Context context, String dialogMsg, DialogInterface.OnClickListener onClickListener);
     }
 
 }

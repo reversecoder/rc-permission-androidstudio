@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by rashed on 4/4/17.
+ * @author Md. Rashsadul Alam
  */
-
 public class PermissionUtil {
 
     public static ArrayList<ManifestPermission> getAllGrantedPermissions(Context context, String appPackage) {

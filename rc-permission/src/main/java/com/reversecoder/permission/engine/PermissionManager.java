@@ -1,4 +1,4 @@
-package com.reversecoder.permission.permissify;
+package com.reversecoder.permission.engine;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
@@ -10,68 +10,43 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.reversecoder.permission.activity.BasePermissionActivity;
+import com.reversecoder.permission.dialog.PermissionDeniedInfoDialogFragment;
+import com.reversecoder.permission.dialog.PermissionRationaleDialogFragment;
 import com.reversecoder.permission.model.PermissionRequestStatus;
+import com.reversecoder.permission.model.PermissionResultCallback;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * Manager that handles various permission request states
+ * @author Md. Rashsadul Alam
  */
-public class PermissifyManager {
+public class PermissionManager {
 
     private static final String SAVE_INSTANCE_KEY_PENDING_PERMISSION_CALL = "pendingPermissionCalls";
-    private static final String TAG = "Permissify";
+    public static final String TAG = "rc-permission-handler";
 
-//    /**
-//     * Status that indicates the current state of permission request
-//     */
-//    public enum CallRequestStatus {
-//        PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_DENIED_FOREVER, PERMISSION_RATIONALE
-//    }
-
-    private PermissifyActivity activity;
+    private BasePermissionActivity activity;
     private LifecycleHandler lifecycleHandler = new LifecycleHandler();
     private PermissionCallDefaultInitializer callOptionsInitializer = new PermissionCallDefaultInitializer();
     private HashMap<Integer, PendingPermissionCall> pendingPermissionCalls = new HashMap<>();
-    private PermissifyConfig permissifyConfig;
+    private PermissionConfig permissionConfig;
 
-    PermissifyManager(PermissifyActivity activity) {
+    public PermissionManager(BasePermissionActivity activity) {
         this.activity = activity;
-        this.permissifyConfig = PermissifyConfig.get();
+        this.permissionConfig = PermissionConfig.get();
     }
 
-    /**
-     * Requests permission using default PermissionCallOptions
-     *
-     * @param fragment   - fragment that implements Callback interface and where result will be delivered
-     * @param callId     - unique identifier that is associated with this permission call
-     * @param permission - one of the {@link android.Manifest.permission}
-     */
-    public <T extends Fragment & Callback> void callWithPermission(T fragment, int callId, String permission) {
-        callWithPermission(fragment, callId, permission, permissifyConfig.getDefaultPermissionCallOptions());
+    public <T extends Fragment & PermissionResultCallback> void callWithPermission(T fragment, int callId, String permission) {
+        callWithPermission(fragment, callId, permission, permissionConfig.getDefaultPermissionCallOptions());
     }
 
-    /**
-     * Requests permission using default PermissionCallOptions
-     *
-     * @param activity   - PermissifyActivity
-     * @param callId     - unique identifier that is associated with this permission call
-     * @param permission - one of the {@link android.Manifest.permission}
-     */
-    public void callWithPermission(PermissifyActivity activity, int callId, String permission) {
-        callWithPermission(activity, callId, permission, permissifyConfig.getDefaultPermissionCallOptions());
+    public void callWithPermission(BasePermissionActivity activity, int callId, String permission) {
+        callWithPermission(activity, callId, permission, permissionConfig.getDefaultPermissionCallOptions());
     }
 
-    /**
-     * Requests permission using custom PermissionCallOptions
-     *
-     * @param fragment              - fragment that implements Callback interface and where result will be delivered
-     * @param callId                - unique identifier that is associated with this permission call
-     * @param permission            - one of the {@link android.Manifest.permission}
-     * @param permissionCallOptions - custom permission call options
-     */
-    public <T extends Fragment & Callback> void callWithPermission(T fragment, int callId, String permission, PermissionCallOptions permissionCallOptions) {
+    public <T extends Fragment & PermissionResultCallback> void callWithPermission(T fragment, int callId, String permission, PermissionCallOptions permissionCallOptions) {
         PermissionCallInternalData data = new PermissionCallInternalData();
         data.requestFromFragment = true;
         data.fragmentId = fragment.getId();
@@ -82,15 +57,7 @@ public class PermissifyManager {
         doCallWithPermission(fragment.getActivity(), fragment, pendingPermissionCall);
     }
 
-    /**
-     * Requests permission using custom PermissionCallOptions
-     *
-     * @param activity              - PermissifyActivity
-     * @param callId                - unique identifier that is associated with this permission call
-     * @param permission            - one of the {@link android.Manifest.permission}
-     * @param permissionCallOptions - custom permission call options
-     */
-    public void callWithPermission(PermissifyActivity activity, int callId, String permission, PermissionCallOptions permissionCallOptions) {
+    public void callWithPermission(BasePermissionActivity activity, int callId, String permission, PermissionCallOptions permissionCallOptions) {
         PermissionCallInternalData data = new PermissionCallInternalData();
         data.requestFromFragment = false;
         data.callId = callId;
@@ -100,32 +67,21 @@ public class PermissifyManager {
         doCallWithPermission(activity, activity, pendingPermissionCall);
     }
 
-    /**
-     * Checks whether or not app has this permission
-     *
-     * @param permission - one of the {@link android.Manifest.permission}
-     * @return true - app has this permission, false app doesn't have this permission
-     */
     public boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    /**
-     * This method should be called after the user had seen permission rationale and system permission call should be now requested. Use it only in case of handling permission rationale in custom way.
-     *
-     * @param callId - unique identifier that is associated with this permission call
-     */
     public void onRationaleConfirmed(int callId) {
         PendingPermissionCall pendingPermissionCall = pendingPermissionCalls.get(callId);
         getLifecycleHandler().onRationaleDialogConfirm(pendingPermissionCall);
     }
 
-    LifecycleHandler getLifecycleHandler() {
+    public LifecycleHandler getLifecycleHandler() {
         return lifecycleHandler;
     }
 
-    private void doCallWithPermission(FragmentActivity activity, Callback callback, PendingPermissionCall pendingCall) {
-        callOptionsInitializer.initializeWithDefault(activity, pendingCall.internalData.permission, pendingCall.options, permissifyConfig);
+    private void doCallWithPermission(FragmentActivity activity, PermissionResultCallback callback, PendingPermissionCall pendingCall) {
+        callOptionsInitializer.initializeWithDefault(activity, pendingCall.internalData.permission, pendingCall.options, permissionConfig);
 
         if (hasPermission(pendingCall.internalData.permission)) {
             callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.PERMISSION_GRANTED);
@@ -138,31 +94,31 @@ public class PermissifyManager {
                 }
                 callback.onCallWithPermissionResult(pendingCall.internalData.callId, PermissionRequestStatus.PERMISSION_RATIONALE);
             } else {
-                ActivityCompat.requestPermissions(activity, new String[]{ pendingCall.internalData.permission }, pendingCall.internalData.callId);
+                ActivityCompat.requestPermissions(activity, new String[]{pendingCall.internalData.permission}, pendingCall.internalData.callId);
             }
         }
     }
 
     @Nullable
-    private Callback getCallback(Activity activity) {
-        if (activity instanceof Callback) {
-            return (Callback) activity;
+    private PermissionResultCallback getCallback(Activity activity) {
+        if (activity instanceof PermissionResultCallback) {
+            return (PermissionResultCallback) activity;
         }
 
         return null;
     }
 
     @Nullable
-    private Callback getCallback(Fragment fragment) {
-        if (fragment instanceof Callback) {
-            return (Callback) fragment;
+    private PermissionResultCallback getCallback(Fragment fragment) {
+        if (fragment instanceof PermissionResultCallback) {
+            return (PermissionResultCallback) fragment;
         }
 
         return null;
     }
 
     @Nullable
-    private Callback getCallback(PendingPermissionCall pendingPermissionCall) {
+    private PermissionResultCallback getCallback(PendingPermissionCall pendingPermissionCall) {
         if (pendingPermissionCall.internalData.requestFromFragment) {
             Fragment requestingFragment = getRequestingFragment(pendingPermissionCall);
             if (requestingFragment != null) {
@@ -180,20 +136,6 @@ public class PermissifyManager {
         return activity.getSupportFragmentManager().findFragmentById(permissionCall.internalData.fragmentId);
     }
 
-    /**
-     * Callback that is used by PermissifyManager to deliver permission request status
-     */
-    public interface Callback {
-
-        /**
-         * Delivers permission request status
-         *
-         * @param callId - unique identifier that is associated with this permission call
-         * @param status - current permission request status
-         */
-        public void onCallWithPermissionResult(int callId, PermissionRequestStatus status);
-    }
-
     private static class PermissionCallInternalData implements Serializable {
         private int callId;
         private boolean requestFromFragment;
@@ -201,7 +143,7 @@ public class PermissifyManager {
         private String permission;
     }
 
-    static class PendingPermissionCall implements Serializable {
+    public static class PendingPermissionCall implements Serializable {
         public final PermissionCallOptions options;
         public final PermissionCallInternalData internalData;
 
@@ -211,9 +153,9 @@ public class PermissifyManager {
         }
     }
 
-    class LifecycleHandler {
+    public class LifecycleHandler {
 
-        void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
             PendingPermissionCall pendingPermissionCall = pendingPermissionCalls.remove(requestCode);
 
             if (grantResults.length < 1) {
@@ -228,7 +170,7 @@ public class PermissifyManager {
 
             boolean granted = (grantResults[0] == PackageManager.PERMISSION_GRANTED);
             boolean showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0]);
-            Callback callback = getCallback(pendingPermissionCall);
+            PermissionResultCallback callback = getCallback(pendingPermissionCall);
 
             if (callback == null) {
                 Log.w(TAG, "Callback was null. Unable to dispatch permission result");
@@ -240,13 +182,13 @@ public class PermissifyManager {
                 }
 
                 callback.onCallWithPermissionResult(requestCode,
-                    granted ? PermissionRequestStatus.PERMISSION_GRANTED :
-                        showRationale ? PermissionRequestStatus.PERMISSION_DENIED : PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
+                        granted ? PermissionRequestStatus.PERMISSION_GRANTED :
+                                showRationale ? PermissionRequestStatus.PERMISSION_DENIED : PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
             }
         }
 
         @SuppressWarnings("unchecked")
-        void onRestoreInstanceState(Bundle savedInstanceState) {
+        public void onRestoreInstanceState(Bundle savedInstanceState) {
             if (savedInstanceState != null) {
                 if (savedInstanceState.containsKey(SAVE_INSTANCE_KEY_PENDING_PERMISSION_CALL)) {
                     pendingPermissionCalls = (HashMap<Integer, PendingPermissionCall>) savedInstanceState.getSerializable(SAVE_INSTANCE_KEY_PENDING_PERMISSION_CALL);
@@ -254,12 +196,12 @@ public class PermissifyManager {
             }
         }
 
-        void onSaveInstanceState(Bundle outState) {
+        public void onSaveInstanceState(Bundle outState) {
             outState.putSerializable(SAVE_INSTANCE_KEY_PENDING_PERMISSION_CALL, pendingPermissionCalls);
         }
 
-        void onRationaleDialogConfirm(PendingPermissionCall permissionCall) {
-            ActivityCompat.requestPermissions(activity, new String[]{ permissionCall.internalData.permission }, permissionCall.internalData.callId);
+        public void onRationaleDialogConfirm(PendingPermissionCall permissionCall) {
+            ActivityCompat.requestPermissions(activity, new String[]{permissionCall.internalData.permission}, permissionCall.internalData.callId);
         }
 
     }

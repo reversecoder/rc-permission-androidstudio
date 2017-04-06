@@ -6,19 +6,21 @@ import android.widget.ListView;
 
 import com.reversecoder.permission.R;
 import com.reversecoder.permission.adapter.PermissionListViewAdapter;
+import com.reversecoder.permission.dialog.PermissionDeniedInfoDialogFragment;
+import com.reversecoder.permission.engine.PermissionCallOptions;
 import com.reversecoder.permission.model.ManifestPermission;
 import com.reversecoder.permission.model.PermissionRequestStatus;
 import com.reversecoder.permission.model.onPermissionItemClickListener;
-import com.reversecoder.permission.permissify.PermissifyActivity;
-import com.reversecoder.permission.permissify.PermissionCallOptions;
-import com.reversecoder.permission.permissify.PermissionDeniedInfoDialogFragment;
 import com.reversecoder.permission.util.EnumManager;
 import com.reversecoder.permission.util.PermissionUtil;
 import com.reversecoder.permission.util.SessionManager;
 
 import java.util.ArrayList;
 
-public class PermissionActivity extends PermissifyActivity {
+/**
+ * @author Md. Rashsadul Alam
+ */
+public class PermissionActivity extends BasePermissionActivity {
 
     ListView listViewPermission;
     PermissionListViewAdapter permissionListViewAdapter;
@@ -26,10 +28,7 @@ public class PermissionActivity extends PermissifyActivity {
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override
         public void getCurrentPermission(ManifestPermission permission) {
-//            Toast.makeText(PermissionActivity.this,permission.getFullName()+"\n"+permission.getUuid(),Toast.LENGTH_SHORT).show();
-
-            //call to permissify using without dialogs, but with custom behavior (handled in onCallWithPermissionResult)
-            getPermissifyManager().callWithPermission(PermissionActivity.this, permission.getUuid(), permission.getFullName(), new PermissionCallOptions.Builder()
+            getPermissionManager().callWithPermission(PermissionActivity.this, permission.getUuid(), permission.getFullName(), new PermissionCallOptions.Builder()
                     .withDefaultDenyDialog(true)
                     .withDefaultRationaleDialog(true)
                     .build());
@@ -54,7 +53,6 @@ public class PermissionActivity extends PermissifyActivity {
 
         ManifestPermission manifestPermission = permissionListViewAdapter.getPermission(callId);
         if (manifestPermission != null) {
-//            Toast.makeText(PermissionActivity.this,"My status: "+status.name(),Toast.LENGTH_SHORT).show();
             permissionListViewAdapter.updatePermissionStatus(callId, status);
         }
 
@@ -62,7 +60,7 @@ public class PermissionActivity extends PermissifyActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         exitOnPermissionGranted();
     }
@@ -81,8 +79,6 @@ public class PermissionActivity extends PermissifyActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PermissionDeniedInfoDialogFragment.REQUEST_CODE_APPLICATION_DETAILS_SETTINGS) {
-//            Toast.makeText(PermissionActivity.this, "Got request code: " + PermissionDeniedInfoDialogFragment.REQUEST_CODE_APPLICATION_DETAILS_SETTINGS, Toast.LENGTH_SHORT).show();
-
             ArrayList<ManifestPermission> currentListData = permissionListViewAdapter.getPermissions();
             ArrayList<ManifestPermission> currentAppData = PermissionUtil.getAllPermissionsWithoutAutoGranted(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
 

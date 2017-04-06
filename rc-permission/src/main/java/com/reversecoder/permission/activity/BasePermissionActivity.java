@@ -1,42 +1,42 @@
-package com.reversecoder.permission.permissify;
+package com.reversecoder.permission.activity;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.reversecoder.permission.R;
+import com.reversecoder.permission.dialog.DialogText;
+import com.reversecoder.permission.engine.PermissionConfig;
+import com.reversecoder.permission.engine.PermissionManager;
 import com.reversecoder.permission.model.PermissionRequestStatus;
+import com.reversecoder.permission.model.PermissionResultCallback;
 
 import java.util.HashMap;
 
 /**
- * Base activity for an application that uses Permissify library. It provides PermissifyManager that handles various permission request states.
+ * @author Md. Rashsadul Alam
  */
-public class PermissifyActivity extends AppCompatActivity implements PermissifyManager.Callback {
+public class BasePermissionActivity extends AppCompatActivity implements PermissionResultCallback {
 
-    private PermissifyManager permissionManager;
+    private PermissionManager permissionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PermissifyConfig permissifyConfig = new PermissifyConfig.Builder()
+        PermissionConfig permissionConfig = new PermissionConfig.Builder()
                 .withDefaultTextForPermissions(new HashMap<String, DialogText>() {{
                     put(Manifest.permission_group.LOCATION, new DialogText(R.string.location_rationale, R.string.location_deny_dialog));
                     put(Manifest.permission_group.CONTACTS, new DialogText(R.string.camera_rationale, R.string.camera_deny_dialog));
                 }})
                 .build();
 
-        PermissifyConfig.initDefault(permissifyConfig);
+        PermissionConfig.initDefault(permissionConfig);
 
-        permissionManager = new PermissifyManager(this);
+        permissionManager = new PermissionManager(this);
     }
 
     @Override
@@ -64,12 +64,7 @@ public class PermissifyActivity extends AppCompatActivity implements PermissifyM
     public void onCallWithPermissionResult(int callId, PermissionRequestStatus status) {
     }
 
-    /**
-     * Gets PermissifyManager that is associated with this activity
-     *
-     * @return PermissifyManager
-     */
-    public PermissifyManager getPermissifyManager() {
+    public PermissionManager getPermissionManager() {
         return permissionManager;
     }
 
@@ -80,7 +75,7 @@ public class PermissifyActivity extends AppCompatActivity implements PermissifyM
                 .setAction(android.R.string.ok, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        getPermissifyManager().onRationaleConfirmed(callId);
+                        getPermissionManager().onRationaleConfirmed(callId);
                     }
                 })
                 .show();

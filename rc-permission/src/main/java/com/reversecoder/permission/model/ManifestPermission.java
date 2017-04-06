@@ -3,9 +3,8 @@ package com.reversecoder.permission.model;
 import java.util.Random;
 
 /**
- * Created by rashed on 4/4/17.
+ * @author Md. Rashsadul Alam
  */
-
 public class ManifestPermission {
 
     private String name;
@@ -35,7 +34,7 @@ public class ManifestPermission {
     }
 
     public String getShortName() {
-        return name.replace("android.permission.", "").replace("com.android.launcher.permission.","");
+        return name.replace("android.permission.", "").replace("com.android.launcher.permission.", "");
     }
 
     public int getUuid() {

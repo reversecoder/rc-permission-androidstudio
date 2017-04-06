@@ -18,9 +18,8 @@ import com.reversecoder.permission.util.SessionManager;
 import java.util.ArrayList;
 
 /**
- * Created by rashed on 4/4/17.
+ * @author Md. Rashsadul Alam
  */
-
 public class PermissionListViewAdapter extends BaseAdapter {
 
     private Context mContext;

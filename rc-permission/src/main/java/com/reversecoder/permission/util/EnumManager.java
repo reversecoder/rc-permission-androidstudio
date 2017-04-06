@@ -5,9 +5,8 @@ import android.util.Log;
 import java.util.EnumSet;
 
 /**
- * Created by rashed on 4/5/17.
+ * @author Md. Rashsadul Alam
  */
-
 public class EnumManager {
 
     /*

@@ -1,30 +1,35 @@
-package com.reversecoder.permission.permissify;
+package com.reversecoder.permission.engine;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.reversecoder.permission.dialog.DialogText;
+
+/**
+ * @author Md. Rashsadul Alam
+ */
 class PermissionCallDefaultInitializer {
 
-    private static final String TAG = "Permissify";
+    public static final String TAG = "rc-permission-handler";
 
-    void initializeWithDefault(@NonNull Context context, @NonNull String permission, @NonNull PermissionCallOptions callOptions, PermissifyConfig permissifyConfig) {
-        DialogText text = getPermissionDefaultText(context, permission, permissifyConfig);
+    void initializeWithDefault(@NonNull Context context, @NonNull String permission, @NonNull PermissionCallOptions callOptions, PermissionConfig permissionConfig) {
+        DialogText text = getPermissionDefaultText(context, permission, permissionConfig);
         setDefaultDenyMessageIfNeeded(callOptions, text);
         setDefaultRationalMessageIfNeeded(callOptions, text);
     }
 
     @NonNull
-    private DialogText getPermissionDefaultText(Context context, String permission, PermissifyConfig permissifyConfig) {
+    private DialogText getPermissionDefaultText(Context context, String permission, PermissionConfig permissionConfig) {
         String permissionGroup = getPermissionGroup(context, permission);
         DialogText text = null;
 
         if (permissionGroup != null) {
-            text = permissifyConfig.getDefaultTextForPermissions().get(permissionGroup);
+            text = permissionConfig.getDefaultTextForPermissions().get(permissionGroup);
         }
 
-        return text != null ? text : permissifyConfig.getPermissionTextFallback();
+        return text != null ? text : permissionConfig.getPermissionTextFallback();
     }
 
     private void setDefaultDenyMessageIfNeeded(PermissionCallOptions callOptions, DialogText dialogText) {

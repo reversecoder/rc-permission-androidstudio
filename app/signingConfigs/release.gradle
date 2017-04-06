@@ -1,0 +1,8 @@
+signingConfigs {
+    release {
+        storeFile file("keydata.keystore")
+        storePassword "123456"
+        keyAlias "keydata.keystore"
+        keyPassword "123456"
+    }
+}

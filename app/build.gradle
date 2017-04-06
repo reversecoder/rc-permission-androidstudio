@@ -1,21 +1,41 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion appCompileSdkVersion
+    buildToolsVersion appBuildToolsVersion
     defaultConfig {
         applicationId "com.reversecoder.permission.demo"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion appMinSdkVersion
+        targetSdkVersion appTargetSdkVersion
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        signingConfig signingConfigs.debug
     }
+
+    // signingConfigs
+    apply from: 'signingConfigs/debug.gradle', to: android
+    apply from: 'signingConfigs/release.gradle', to: android
+
     buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
+            debuggable false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 
@@ -24,8 +44,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile project(":rc-permission")
-    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile "com.android.support:appcompat-v7:$supportlibraryVersion"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile project(":rc-permission")
     testCompile 'junit:junit:4.12'
 }

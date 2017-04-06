@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+repositories {
+
+    maven {
+        url "https://raw.github.com/reversecoder/rc-permission-androidstudio/releases"
+    }
+
+    maven {
+        url "https://raw.github.com/reversecoder/rc-permission-androidstudio/snapshots"
+    }
+}
+
 android {
     compileSdkVersion appCompileSdkVersion
     buildToolsVersion appBuildToolsVersion
@@ -47,6 +58,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$supportlibraryVersion"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
-    compile project(":rc-permission")
+//    compile project(":rc-permission")
+    compile 'com.reversecoder.permission:rc-permission:1.0.0-SNAPSHOT'
     testCompile 'junit:junit:4.12'
 }

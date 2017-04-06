@@ -51,12 +51,12 @@ public class PermissionListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    public ArrayList<ManifestPermission> getPermissions(){
+    public ArrayList<ManifestPermission> getPermissions() {
         return mData;
     }
 
-    public void setPermissions(ArrayList<ManifestPermission> permissions){
-        mData=permissions;
+    public void setPermissions(ArrayList<ManifestPermission> permissions) {
+        mData = permissions;
         notifyDataSetChanged();
     }
 
@@ -118,40 +118,51 @@ public class PermissionListViewAdapter extends BaseAdapter {
         return ContextCompat.getColor(mContext, R.color.permission_request_is_not_sent);
     }
 
-    public ManifestPermission getPermission(int uuid){
-        for(ManifestPermission d : mData){
-            if(d.getUuid()==uuid){
+    public ManifestPermission getPermission(int uuid) {
+        for (ManifestPermission d : mData) {
+            if (d.getUuid() == uuid) {
                 return d;
             }
         }
         return null;
     }
 
-    public int getPermissionPosition(int uuid){
-        for(int i=0;i<mData.size();i++){
-            if(mData.get(i).getUuid()==uuid){
+    public int getPermissionPosition(int uuid) {
+        for (int i = 0; i < mData.size(); i++) {
+            if (mData.get(i).getUuid() == uuid) {
                 return i;
             }
         }
         return -1;
     }
 
-    public ManifestPermission updatePermissionStatus(int uuid, PermissionRequestStatus permissionRequestStatus){
-        if(getPermission(uuid)!=null){
+    public ManifestPermission updatePermissionStatus(int uuid, PermissionRequestStatus permissionRequestStatus) {
+        if (getPermission(uuid) != null) {
             mData.get(getPermissionPosition(uuid)).setPermissionRequestStatus(permissionRequestStatus);
-            ManifestPermission permission=mData.get(getPermissionPosition(uuid));
-            SessionManager.setStringSetting(mContext,permission.getFullName(),permissionRequestStatus.name());
+            ManifestPermission permission = mData.get(getPermissionPosition(uuid));
+            SessionManager.setStringSetting(mContext, permission.getFullName(), permissionRequestStatus.name());
             notifyDataSetChanged();
             return permission;
         }
         return null;
     }
 
-    public boolean isActionTakenForPermissions(){
-        for(ManifestPermission d : mData){
-            if(d.getPermissionRequestStatus()!= PermissionRequestStatus.UNKNOWN){
+    public boolean isActionTakenForPermissions() {
+        for (ManifestPermission d : mData) {
+            if (d.getPermissionRequestStatus() != PermissionRequestStatus.UNKNOWN) {
                 continue;
-            }else{
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isAllPermissionGranted() {
+        for (ManifestPermission d : mData) {
+            if (d.getPermissionRequestStatus() == PermissionRequestStatus.PERMISSION_GRANTED) {
+                continue;
+            } else {
                 return false;
             }
         }

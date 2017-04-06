@@ -1,17 +1,17 @@
 <resources>
-<!--    <string name="app_name">rc-permission</string>-->
+    <string name="app_name_rc_permission">rc-permission-handler</string>
     <string name="permissify_go_to_settings">Go to settings</string>
     <string name="permissify_permission_rationale_title">We need this permission</string>
     <string name="permissify_no_text_fallback">Permissify: No fallback text was provided for this permission</string>
 
-    <string name="permission_status_granted">Granted</string>
-    <string name="permission_status_unknown">Unknown</string>
-    <string name="permission_status_denied">Denied</string>
-    <string name="permission_status_denied_forever">Denied Forever</string>
-    <string name="permission_status_rationale">Rationale</string>
+    <string name="permission_status_granted">Status: Granted</string>
+    <string name="permission_status_unknown">Status: Waiting to be granted by user</string>
+    <string name="permission_status_denied">Status: Denied</string>
+    <string name="permission_status_denied_forever">Status: Denied Forever</string>
+    <string name="permission_status_rationale">Status: Rationale</string>
 
-    <string name="location_rationale">The location permission is necessary to locate hotels near you</string>
-    <string name="location_deny_dialog">Without location permission we can\'t show hotels near you</string>
-    <string name="camera_rationale">Wee need camera permission to take a picture of your swimming pool</string>
-    <string name="camera_deny_dialog">Without camera permission swimming pool selfies are disabled</string>
+    <string name="location_rationale">The location permission is necessary to locate your desire places.</string>
+    <string name="location_deny_dialog">Without location permission we can\'t show your desire places.</string>
+    <string name="camera_rationale">We need camera permission to take a picture.</string>
+    <string name="camera_deny_dialog">Without camera permission no picture will be taken.</string>
 </resources>

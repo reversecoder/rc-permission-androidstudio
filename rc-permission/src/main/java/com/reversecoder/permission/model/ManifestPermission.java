@@ -35,7 +35,7 @@ public class ManifestPermission {
     }
 
     public String getShortName() {
-        return name.replace("android.permission.", "");
+        return name.replace("android.permission.", "").replace("com.android.launcher.permission.","");
     }
 
     public int getUuid() {

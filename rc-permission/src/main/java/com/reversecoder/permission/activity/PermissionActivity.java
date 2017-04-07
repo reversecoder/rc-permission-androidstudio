@@ -24,6 +24,7 @@ public class PermissionActivity extends BasePermissionActivity {
 
     ListView listViewPermission;
     PermissionListViewAdapter permissionListViewAdapter;
+    public static final int REQUEST_CODE_PERMISSION_GRANTED = 42000;
 
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override

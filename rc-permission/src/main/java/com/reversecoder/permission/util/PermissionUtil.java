@@ -184,6 +184,8 @@ public class PermissionUtil {
         manifestPermissions.add(new ManifestPermission("android.permission.VIBRATE", PermissionRequestStatus.PERMISSION_GRANTED));
         manifestPermissions.add(new ManifestPermission("android.permission.WAKE_LOCK", PermissionRequestStatus.PERMISSION_GRANTED));
         manifestPermissions.add(new ManifestPermission("android.permission.WRITE_SYNC_SETTINGS", PermissionRequestStatus.PERMISSION_GRANTED));
+        manifestPermissions.add(new ManifestPermission("android.permission.READ_LOGS", PermissionRequestStatus.PERMISSION_GRANTED));
+
         manifestPermissions.add(new ManifestPermission("com.android.alarm.permission.SET_ALARM", PermissionRequestStatus.PERMISSION_GRANTED));
         manifestPermissions.add(new ManifestPermission("com.android.launcher.permission.INSTALL_SHORTCUT", PermissionRequestStatus.PERMISSION_GRANTED));
         manifestPermissions.add(new ManifestPermission("com.android.launcher.permission.UNINSTALL_SHORTCUT", PermissionRequestStatus.PERMISSION_GRANTED));

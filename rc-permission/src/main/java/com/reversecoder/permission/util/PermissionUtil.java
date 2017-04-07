@@ -146,6 +146,18 @@ public class PermissionUtil {
         return false;
     }
 
+    public static boolean isAllPermissionGranted(Context context) {
+        ArrayList<ManifestPermission> permissions = getAllPermissionsWithoutAutoGranted(context, getPackageName(context));
+        for (ManifestPermission d : permissions) {
+            if (d.getPermissionRequestStatus() == PermissionRequestStatus.PERMISSION_GRANTED) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static ArrayList<ManifestPermission> getAllAutoGrantedPermissionList() {
         ArrayList<ManifestPermission> manifestPermissions = new ArrayList<ManifestPermission>();
 

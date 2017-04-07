@@ -42,10 +42,10 @@ public class PermissionActivity extends BasePermissionActivity {
         setContentView(R.layout.activity_permission);
 
         listViewPermission = (ListView) findViewById(R.id.listview_permission);
-
         ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
         permissionListViewAdapter = new PermissionListViewAdapter(PermissionActivity.this, data, permissionItemClickListener);
         listViewPermission.setAdapter(permissionListViewAdapter);
+
     }
 
     @Override

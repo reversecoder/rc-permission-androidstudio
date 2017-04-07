@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.reversecoder.permission.activity.PermissionActivity;
 import com.reversecoder.permission.demo.R;
+import com.reversecoder.permission.util.PermissionUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,8 +17,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent(MainActivity.this, PermissionActivity.class);
-            startActivity(intent);
+            if(!PermissionUtil.isAllPermissionGranted(MainActivity.this)){
+                Intent intent = new Intent(MainActivity.this, PermissionActivity.class);
+                startActivity(intent);
+            }
         }
     }
 }

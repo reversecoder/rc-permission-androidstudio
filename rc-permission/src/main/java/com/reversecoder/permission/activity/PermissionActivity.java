@@ -41,10 +41,6 @@ public class PermissionActivity extends BasePermissionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
 
-        if (PermissionUtil.isAllPermissionGranted(PermissionActivity.this)) {
-            finish();
-        }
-
         listViewPermission = (ListView) findViewById(R.id.listview_permission);
         ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
         permissionListViewAdapter = new PermissionListViewAdapter(PermissionActivity.this, data, permissionItemClickListener);
@@ -83,7 +79,6 @@ public class PermissionActivity extends BasePermissionActivity {
             if (permissionListViewAdapter.isAllPermissionGranted()) {
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
-
                 finish();
             }
         }

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             if( resultCode == RESULT_OK){
                 permissionStatusText="Permissions accepted!!!";
             } else if(resultCode == RESULT_CANCELED){
-                permissionStatusText="Permissions canceled!!!";
+                permissionStatusText="Permissions granting process canceled!!!";
             }
 
             permissionStatus.setText(permissionStatusText);

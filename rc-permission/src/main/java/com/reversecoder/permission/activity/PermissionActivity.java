@@ -24,7 +24,7 @@ public class PermissionActivity extends BasePermissionActivity {
 
     ListView listViewPermission;
     PermissionListViewAdapter permissionListViewAdapter;
-    public static final int REQUEST_CODE_PERMISSION_GRANTED = 42000;
+    public static final int REQUEST_CODE_PERMISSIONS = 42000;
 
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override
@@ -40,6 +40,10 @@ public class PermissionActivity extends BasePermissionActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
+
+        if (PermissionUtil.isAllPermissionGranted(PermissionActivity.this)) {
+            finish();
+        }
 
         listViewPermission = (ListView) findViewById(R.id.listview_permission);
         ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
@@ -66,14 +70,24 @@ public class PermissionActivity extends BasePermissionActivity {
         exitOnPermissionGranted();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(RESULT_CANCELED, intent);
+
+        super.onBackPressed();
+    }
+
     public void exitOnPermissionGranted() {
         if (permissionListViewAdapter != null) {
             if (permissionListViewAdapter.isAllPermissionGranted()) {
+                Intent intent = new Intent();
+                setResult(RESULT_OK, intent);
+
                 finish();
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

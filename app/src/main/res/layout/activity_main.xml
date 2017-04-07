@@ -6,8 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/permission_status"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Permission checking is done." />
+        android:layout_height="wrap_content"/>
 </android.support.constraint.ConstraintLayout>

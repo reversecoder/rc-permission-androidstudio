@@ -1,9 +1,13 @@
 package com.reversecoder.permission.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.content.PermissionChecker;
 
 import com.reversecoder.permission.model.ManifestPermission;
@@ -11,6 +15,8 @@ import com.reversecoder.permission.model.PermissionRequestStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static com.reversecoder.permission.dialog.PermissionDeniedInfoDialogFragment.REQUEST_CODE_APPLICATION_DETAILS_SETTINGS;
 
 /**
  * @author Md. Rashsadul Alam
@@ -156,6 +162,22 @@ public class PermissionUtil {
             }
         }
         return true;
+    }
+
+    /**
+     * @param activity    The instance of the activity.
+     * @param requestCode If you need any callback from application setting then use any
+     *                    positive request code otherwise use -1.
+     */
+    public static void openApplicationSetting(Activity activity, int requestCode) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", activity.getPackageName(), null));
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if (requestCode == -1) {
+            activity.startActivity(intent);
+        } else {
+            activity.startActivityForResult(intent, REQUEST_CODE_APPLICATION_DETAILS_SETTINGS);
+        }
     }
 
     public static ArrayList<ManifestPermission> getAllAutoGrantedPermissionList() {

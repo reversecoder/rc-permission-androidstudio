@@ -4,10 +4,9 @@
 
     <application>
         <activity
-            android:name="com.reversecoder.permission.activity.PermissionActivity"
+            android:name="com.reversecoder.permission.activity.PermissionListActivity"
             android:label="@string/app_name_rc_permission"
             android:screenOrientation="portrait">
         </activity>
     </application>
-
 </manifest>

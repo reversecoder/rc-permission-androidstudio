@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  * @author Md. Rashsadul Alam
  */
-public class PermissionActivity extends BasePermissionActivity {
+public class PermissionListActivity extends BasePermissionActivity {
 
     ListView listViewPermission;
     PermissionListViewAdapter permissionListViewAdapter;
@@ -29,7 +29,7 @@ public class PermissionActivity extends BasePermissionActivity {
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override
         public void getCurrentPermission(ManifestPermission permission) {
-            getPermissionManager().callWithPermission(PermissionActivity.this, permission.getUuid(), permission.getFullName(), new PermissionCallOptions.Builder()
+            getPermissionManager().callWithPermission(PermissionListActivity.this, permission.getUuid(), permission.getFullName(), new PermissionCallOptions.Builder()
                     .withDefaultDenyDialog(true)
                     .withDefaultRationaleDialog(true)
                     .build());
@@ -39,11 +39,11 @@ public class PermissionActivity extends BasePermissionActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_permission);
+        setContentView(R.layout.activity_permission_list);
 
         listViewPermission = (ListView) findViewById(R.id.listview_permission);
-        ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
-        permissionListViewAdapter = new PermissionListViewAdapter(PermissionActivity.this, data, permissionItemClickListener);
+        ArrayList<ManifestPermission> data = PermissionUtil.getAllCustomizedPermissions(PermissionListActivity.this, PermissionUtil.getPackageName(PermissionListActivity.this));
+        permissionListViewAdapter = new PermissionListViewAdapter(PermissionListActivity.this, data, permissionItemClickListener);
         listViewPermission.setAdapter(permissionListViewAdapter);
 
     }
@@ -90,32 +90,32 @@ public class PermissionActivity extends BasePermissionActivity {
 
         if (requestCode == PermissionDeniedInfoDialogFragment.REQUEST_CODE_APPLICATION_DETAILS_SETTINGS) {
             ArrayList<ManifestPermission> currentListData = permissionListViewAdapter.getPermissions();
-            ArrayList<ManifestPermission> currentAppData = PermissionUtil.getAllPermissionsWithoutAutoGranted(PermissionActivity.this, PermissionUtil.getPackageName(PermissionActivity.this));
+            ArrayList<ManifestPermission> currentAppData = PermissionUtil.getAllPermissionsWithoutAutoGranted(PermissionListActivity.this, PermissionUtil.getPackageName(PermissionListActivity.this));
 
             if (permissionListViewAdapter != null) {
                 for (int i = 0; i < currentAppData.size(); i++) {
                     if (currentAppData.get(i).getPermissionRequestStatus() != currentListData.get(i).getPermissionRequestStatus()) {
                         switch (currentAppData.get(i).getPermissionRequestStatus()) {
                             case UNKNOWN:
-                                if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_GRANTED) {
+                                if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_GRANTED) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.UNKNOWN) {
+                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.UNKNOWN) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED) {
+                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED_FOREVER) {
+                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED_FOREVER) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_RATIONALE) {
+                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_RATIONALE) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_RATIONALE);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_RATIONALE);
                                 }
                                 break;
                             case PERMISSION_GRANTED:
-//                                if(EnumManager.getInstance(SessionManager.getStringSetting(PermissionActivity.this, currentAppData.get(i).getFullName()),PermissionRequestStatus.class)== PermissionRequestStatus.UNKNOWN){
+//                                if(EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()),PermissionRequestStatus.class)== PermissionRequestStatus.UNKNOWN){
 //                                    permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_GRANTED);
 //                                }
 //                                permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_GRANTED);

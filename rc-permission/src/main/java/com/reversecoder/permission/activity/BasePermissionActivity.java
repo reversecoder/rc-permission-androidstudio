@@ -69,7 +69,7 @@ public class BasePermissionActivity extends AppCompatActivity implements Permiss
     }
 
 
-    private void showRationaleSnackbar(final int callId, int rationaleTextResID) {
+    public void showRationaleSnackbar(final int callId, int rationaleTextResID) {
         Snackbar
                 .make(findViewById(android.R.id.content), rationaleTextResID, Snackbar.LENGTH_LONG)
                 .setAction(android.R.string.ok, new View.OnClickListener() {

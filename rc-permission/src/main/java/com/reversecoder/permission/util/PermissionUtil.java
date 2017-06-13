@@ -23,42 +23,44 @@ import static com.reversecoder.permission.dialog.PermissionDeniedInfoDialogFragm
  */
 public class PermissionUtil {
 
-    public static ArrayList<ManifestPermission> getAllGrantedPermissions(Context context, String appPackage) {
-        ArrayList<ManifestPermission> granted = new ArrayList<ManifestPermission>();
-        try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
-            ManifestPermission manifestPermission;
-            for (int i = 0; i < pi.requestedPermissions.length; i++) {
-                if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                    manifestPermission = new ManifestPermission(pi.requestedPermissions[i], PermissionRequestStatus.PERMISSION_GRANTED);
-                    granted.add(manifestPermission);
-                }
-            }
-        } catch (Exception e) {
-        }
-        return granted;
-    }
+    public static final String PERMISSION_DRAW_OVER_OTHER_APPS = "android.permission.SYSTEM_ALERT_WINDOW";
 
-    public static ArrayList<ManifestPermission> getAllPermissionsWithAutoGranted(Context context, String appPackage) {
-        ArrayList<String> permissions;
-        ArrayList<ManifestPermission> mPermissions = new ArrayList<ManifestPermission>();
-        try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
-            permissions = new ArrayList<String>(Arrays.asList(pi.requestedPermissions));
-            ManifestPermission manifestPermission;
-            for (int i = 0; i < permissions.size(); i++) {
-                if (isPermissionGranted(context, permissions.get(i))) {
-                    manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.PERMISSION_GRANTED);
-                } else {
-                    manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
-                }
-                mPermissions.add(manifestPermission);
-            }
-            return mPermissions;
-        } catch (Exception e) {
-        }
-        return null;
-    }
+//    public static ArrayList<ManifestPermission> getAllGrantedPermissions(Context context, String appPackage) {
+//        ArrayList<ManifestPermission> granted = new ArrayList<ManifestPermission>();
+//        try {
+//            PackageInfo pi = context.getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
+//            ManifestPermission manifestPermission;
+//            for (int i = 0; i < pi.requestedPermissions.length; i++) {
+//                if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+//                    manifestPermission = new ManifestPermission(pi.requestedPermissions[i], PermissionRequestStatus.PERMISSION_GRANTED);
+//                    granted.add(manifestPermission);
+//                }
+//            }
+//        } catch (Exception e) {
+//        }
+//        return granted;
+//    }
+//
+//    public static ArrayList<ManifestPermission> getAllPermissionsWithAutoGranted(Context context, String appPackage) {
+//        ArrayList<String> permissions;
+//        ArrayList<ManifestPermission> mPermissions = new ArrayList<ManifestPermission>();
+//        try {
+//            PackageInfo pi = context.getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
+//            permissions = new ArrayList<String>(Arrays.asList(pi.requestedPermissions));
+//            ManifestPermission manifestPermission;
+//            for (int i = 0; i < permissions.size(); i++) {
+//                if (isPermissionGranted(context, permissions.get(i))) {
+//                    manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.PERMISSION_GRANTED);
+//                } else {
+//                    manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
+//                }
+//                mPermissions.add(manifestPermission);
+//            }
+//            return mPermissions;
+//        } catch (Exception e) {
+//        }
+//        return null;
+//    }
 
     public static ArrayList<ManifestPermission> getAllPermissionsWithoutAutoGranted(Context context, String appPackage) {
         ArrayList<String> permissions;
@@ -69,12 +71,22 @@ public class PermissionUtil {
             ManifestPermission manifestPermission;
             for (int i = 0; i < permissions.size(); i++) {
                 if (!isAutoGrantedPermission(permissions.get(i))) {
-                    if (isPermissionGranted(context, permissions.get(i))) {
-                        manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.PERMISSION_GRANTED);
+                    if (!permissions.get(i).equalsIgnoreCase(PERMISSION_DRAW_OVER_OTHER_APPS)) {
+                        if (isPermissionGranted(context, permissions.get(i))) {
+                            manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.PERMISSION_GRANTED);
+                        } else {
+                            manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
+                        }
+                        mPermissions.add(manifestPermission);
                     } else {
-                        manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
+                        if (SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                                && SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
+                                && Settings.canDrawOverlays(context)) {
+
+                        } else {
+                            SessionManager.setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
+                        }
                     }
-                    mPermissions.add(manifestPermission);
                 }
             }
             return mPermissions;
@@ -92,13 +104,23 @@ public class PermissionUtil {
             ManifestPermission manifestPermission;
             for (int i = 0; i < permissions.size(); i++) {
                 if (!isAutoGrantedPermission(permissions.get(i))) {
-                    if (!SessionManager.getStringSetting(context, permissions.get(i)).equalsIgnoreCase("")) {
-                        manifestPermission = new ManifestPermission(permissions.get(i), EnumManager.getInstance(SessionManager.getStringSetting(context, permissions.get(i)), PermissionRequestStatus.class));
+                    if (!permissions.get(i).equalsIgnoreCase(PERMISSION_DRAW_OVER_OTHER_APPS)) {
+                        if (!SessionManager.getStringSetting(context, permissions.get(i)).equalsIgnoreCase("")) {
+                            manifestPermission = new ManifestPermission(permissions.get(i), EnumManager.getInstance(SessionManager.getStringSetting(context, permissions.get(i)), PermissionRequestStatus.class));
+                        } else {
+                            manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
+                            SessionManager.setStringSetting(context, permissions.get(i), PermissionRequestStatus.UNKNOWN.name());
+                        }
+                        mPermissions.add(manifestPermission);
                     } else {
-                        manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
-                        SessionManager.setStringSetting(context, permissions.get(i), PermissionRequestStatus.UNKNOWN.name());
+                        if (SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                                && SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
+                                && Settings.canDrawOverlays(context)) {
+
+                        } else {
+                            SessionManager.setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
+                        }
                     }
-                    mPermissions.add(manifestPermission);
                 }
             }
             return mPermissions;
@@ -154,8 +176,9 @@ public class PermissionUtil {
 
     public static boolean isAllPermissionGranted(Context context) {
         ArrayList<ManifestPermission> permissions = getAllPermissionsWithoutAutoGranted(context, getPackageName(context));
-        for (ManifestPermission d : permissions) {
-            if (d.getPermissionRequestStatus() == PermissionRequestStatus.PERMISSION_GRANTED) {
+//        for (ManifestPermission d : permissions) {
+        for (int i = 0; i < permissions.size(); i++) {
+            if (permissions.get(i).getPermissionRequestStatus() == PermissionRequestStatus.PERMISSION_GRANTED) {
                 continue;
             } else {
                 return false;

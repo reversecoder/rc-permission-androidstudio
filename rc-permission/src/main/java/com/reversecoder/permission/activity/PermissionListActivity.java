@@ -1,8 +1,11 @@
 package com.reversecoder.permission.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.reversecoder.permission.R;
 import com.reversecoder.permission.adapter.PermissionListViewAdapter;
@@ -17,6 +20,8 @@ import com.reversecoder.permission.util.SessionManager;
 
 import java.util.ArrayList;
 
+import static com.reversecoder.permission.util.PermissionUtil.PERMISSION_DRAW_OVER_OTHER_APPS;
+
 /**
  * @author Md. Rashsadul Alam
  */
@@ -25,6 +30,7 @@ public class PermissionListActivity extends BasePermissionActivity {
     ListView listViewPermission;
     PermissionListViewAdapter permissionListViewAdapter;
     public static final int REQUEST_CODE_PERMISSIONS = 42000;
+    public static final int REQUEST_CODE_DRAW_OVER_OTHER_APPS = 48000;
 
     onPermissionItemClickListener permissionItemClickListener = new onPermissionItemClickListener() {
         @Override
@@ -75,14 +81,32 @@ public class PermissionListActivity extends BasePermissionActivity {
     }
 
     public void exitOnPermissionGranted() {
-        if (permissionListViewAdapter != null) {
-            if (permissionListViewAdapter.isAllPermissionGranted()) {
+        if (permissionListViewAdapter != null && permissionListViewAdapter.isAllPermissionGranted()) {
+            if (SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                    && SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.UNKNOWN.name())
+                    && !Settings.canDrawOverlays(PermissionListActivity.this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_CODE_DRAW_OVER_OTHER_APPS);
+            } else {
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
                 finish();
             }
         }
     }
+
+//    @Override
+//    public void finish() {
+//        if (permissionListViewAdapter != null && permissionListViewAdapter.isAllPermissionGranted()){
+//            if(SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS)!=null){
+//
+//            }else{
+//                super.finish();
+//            }
+//        }else{
+//            super.finish();
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -125,6 +149,20 @@ public class PermissionListActivity extends BasePermissionActivity {
                     }
                 }
             }
+        } else if (requestCode == REQUEST_CODE_DRAW_OVER_OTHER_APPS) {
+            if (Settings.canDrawOverlays(PermissionListActivity.this)) {
+                Intent intent = new Intent();
+                setResult(RESULT_OK, intent);
+                SessionManager.setStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.PERMISSION_GRANTED.name());
+                Toast.makeText(this,
+                        "Draw over other app permission is granted. Closing the application",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this,
+                        "Draw over other app permission not available. Closing the application",
+                        Toast.LENGTH_LONG).show();
+            }
+            finish();
         }
     }
 

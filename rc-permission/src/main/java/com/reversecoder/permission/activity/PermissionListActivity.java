@@ -155,8 +155,8 @@ public class PermissionListActivity extends BasePermissionActivity {
                 setResult(RESULT_OK, intent);
                 SessionManager.setStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.PERMISSION_GRANTED.name());
                 Toast.makeText(this,
-                        "Draw over other app permission is granted. Closing the application",
-                        Toast.LENGTH_LONG).show();
+                        "Draw over other app permission is granted.",
+                        Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this,
                         "Draw over other app permission not available. Closing the application",

@@ -69,8 +69,8 @@ uploadArchives {
 
         pom.project {
             groupId = 'com.reversecoder.permission'
-//            version = '1.0.0-SNAPSHOT'
-            version = '1.0.0'
+            version = '1.0.0-SNAPSHOT'
+//            version = '1.0.0'
             artifactId = 'rc-permission'
             packaging 'aar'
         }

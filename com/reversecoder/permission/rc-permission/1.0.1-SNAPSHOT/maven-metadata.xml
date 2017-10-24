@@ -2,11 +2,12 @@
 <metadata>
   <groupId>com.reversecoder.permission</groupId>
   <artifactId>rc-permission</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
   <versioning>
-    <versions>
-      <version>1.0.0-SNAPSHOT</version>
-      <version>1.0.1-SNAPSHOT</version>
-    </versions>
+    <snapshot>
+      <timestamp>20171024.122228</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
     <lastUpdated>20171024122228</lastUpdated>
   </versioning>
 </metadata>

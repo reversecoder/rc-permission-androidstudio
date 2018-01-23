@@ -13,7 +13,7 @@ import com.reversecoder.permission.R;
 import com.reversecoder.permission.model.ManifestPermission;
 import com.reversecoder.permission.model.PermissionRequestStatus;
 import com.reversecoder.permission.model.onPermissionItemClickListener;
-import com.reversecoder.permission.util.SessionManager;
+import com.reversecoder.permission.util.PermissionUtil;
 
 import java.util.ArrayList;
 
@@ -139,7 +139,7 @@ public class PermissionListViewAdapter extends BaseAdapter {
         if (getPermission(uuid) != null) {
             mData.get(getPermissionPosition(uuid)).setPermissionRequestStatus(permissionRequestStatus);
             ManifestPermission permission = mData.get(getPermissionPosition(uuid));
-            SessionManager.setStringSetting(mContext, permission.getFullName(), permissionRequestStatus.name());
+            PermissionUtil.setStringSetting(mContext, permission.getFullName(), permissionRequestStatus.name());
             notifyDataSetChanged();
             return permission;
         }

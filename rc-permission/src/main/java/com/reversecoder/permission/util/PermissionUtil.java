@@ -3,10 +3,12 @@ package com.reversecoder.permission.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.PermissionChecker;
 
@@ -79,12 +81,12 @@ public class PermissionUtil {
                         }
                         mPermissions.add(manifestPermission);
                     } else {
-                        if (SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
-                                && SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
+                        if (getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                                && getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
                                 && Settings.canDrawOverlays(context)) {
 
                         } else {
-                            SessionManager.setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
+                            setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
                         }
                     }
                 }
@@ -105,20 +107,20 @@ public class PermissionUtil {
             for (int i = 0; i < permissions.size(); i++) {
                 if (!isAutoGrantedPermission(permissions.get(i))) {
                     if (!permissions.get(i).equalsIgnoreCase(PERMISSION_DRAW_OVER_OTHER_APPS)) {
-                        if (!SessionManager.getStringSetting(context, permissions.get(i)).equalsIgnoreCase("")) {
-                            manifestPermission = new ManifestPermission(permissions.get(i), EnumManager.getInstance(SessionManager.getStringSetting(context, permissions.get(i)), PermissionRequestStatus.class));
+                        if (!getStringSetting(context, permissions.get(i)).equalsIgnoreCase("")) {
+                            manifestPermission = new ManifestPermission(permissions.get(i), EnumManager.getInstance(getStringSetting(context, permissions.get(i)), PermissionRequestStatus.class));
                         } else {
                             manifestPermission = new ManifestPermission(permissions.get(i), PermissionRequestStatus.UNKNOWN);
-                            SessionManager.setStringSetting(context, permissions.get(i), PermissionRequestStatus.UNKNOWN.name());
+                            setStringSetting(context, permissions.get(i), PermissionRequestStatus.UNKNOWN.name());
                         }
                         mPermissions.add(manifestPermission);
                     } else {
-                        if (SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
-                                && SessionManager.getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
+                        if (getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                                && getStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.PERMISSION_GRANTED.name())
                                 && Settings.canDrawOverlays(context)) {
 
                         } else {
-                            SessionManager.setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
+                            setStringSetting(context, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.UNKNOWN.name());
                         }
                     }
                 }
@@ -248,6 +250,19 @@ public class PermissionUtil {
         manifestPermissions.add(new ManifestPermission("com.android.launcher.permission.UNINSTALL_SHORTCUT", PermissionRequestStatus.PERMISSION_GRANTED));
 
         return manifestPermissions;
+
+    }
+
+    public static void setStringSetting(Context context, String key, String value) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public static String getStringSetting(Context context, String key) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.getString(key, "");
 
     }
 }

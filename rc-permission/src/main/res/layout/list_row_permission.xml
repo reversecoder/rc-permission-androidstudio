@@ -14,7 +14,8 @@
         android:gravity="center_vertical"
         android:text=""
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="18dp" />
+        android:textSize="16dp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_permission_status"
@@ -23,7 +24,7 @@
         android:layout_marginLeft="15dp"
         android:gravity="center_vertical"
         android:text="@string/permission_status_unknown"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="14dp" />
 
 </LinearLayout>

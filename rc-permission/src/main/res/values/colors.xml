@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-
     <color name="permission_request_is_not_sent">@android:color/white</color>
     <color name="permission_status_granted">#4CAF50</color>
     <color name="permission_status_denied_once">#E57373</color>

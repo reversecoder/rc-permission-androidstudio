@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,11 +18,12 @@ import com.reversecoder.permission.model.PermissionRequestStatus;
 import com.reversecoder.permission.model.onPermissionItemClickListener;
 import com.reversecoder.permission.util.EnumManager;
 import com.reversecoder.permission.util.PermissionUtil;
-import com.reversecoder.permission.util.SessionManager;
 
 import java.util.ArrayList;
 
 import static com.reversecoder.permission.util.PermissionUtil.PERMISSION_DRAW_OVER_OTHER_APPS;
+import static com.reversecoder.permission.util.PermissionUtil.getStringSetting;
+import static com.reversecoder.permission.util.PermissionUtil.setStringSetting;
 
 /**
  * @author Md. Rashsadul Alam
@@ -52,6 +55,12 @@ public class PermissionListActivity extends BasePermissionActivity {
         permissionListViewAdapter = new PermissionListViewAdapter(PermissionListActivity.this, data, permissionItemClickListener);
         listViewPermission.setAdapter(permissionListViewAdapter);
 
+        ((ImageView) findViewById(R.id.iv_back)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
@@ -82,8 +91,8 @@ public class PermissionListActivity extends BasePermissionActivity {
 
     public void exitOnPermissionGranted() {
         if (permissionListViewAdapter != null && permissionListViewAdapter.isAllPermissionGranted()) {
-            if (SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS) != null
-                    && SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.UNKNOWN.name())
+            if (getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS) != null
+                    && getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS).equalsIgnoreCase(PermissionRequestStatus.UNKNOWN.name())
                     && !Settings.canDrawOverlays(PermissionListActivity.this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, REQUEST_CODE_DRAW_OVER_OTHER_APPS);
@@ -98,7 +107,7 @@ public class PermissionListActivity extends BasePermissionActivity {
 //    @Override
 //    public void finish() {
 //        if (permissionListViewAdapter != null && permissionListViewAdapter.isAllPermissionGranted()){
-//            if(SessionManager.getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS)!=null){
+//            if(getStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS)!=null){
 //
 //            }else{
 //                super.finish();
@@ -121,25 +130,25 @@ public class PermissionListActivity extends BasePermissionActivity {
                     if (currentAppData.get(i).getPermissionRequestStatus() != currentListData.get(i).getPermissionRequestStatus()) {
                         switch (currentAppData.get(i).getPermissionRequestStatus()) {
                             case UNKNOWN:
-                                if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_GRANTED) {
+                                if (EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_GRANTED) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.UNKNOWN) {
+                                } else if (EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.UNKNOWN) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.UNKNOWN);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED) {
+                                } else if (EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED_FOREVER) {
+                                } else if (EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_DENIED_FOREVER) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_DENIED_FOREVER);
-                                } else if (EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_RATIONALE) {
+                                } else if (EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()), PermissionRequestStatus.class) == PermissionRequestStatus.PERMISSION_RATIONALE) {
                                     onCallWithPermissionResult(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_RATIONALE);
 //                                        permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_RATIONALE);
                                 }
                                 break;
                             case PERMISSION_GRANTED:
-//                                if(EnumManager.getInstance(SessionManager.getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()),PermissionRequestStatus.class)== PermissionRequestStatus.UNKNOWN){
+//                                if(EnumManager.getInstance(getStringSetting(PermissionListActivity.this, currentAppData.get(i).getFullName()),PermissionRequestStatus.class)== PermissionRequestStatus.UNKNOWN){
 //                                    permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_GRANTED);
 //                                }
 //                                permissionListViewAdapter.updatePermissionStatus(permissionListViewAdapter.getPermissions().get(i).getUuid(), PermissionRequestStatus.PERMISSION_GRANTED);
@@ -153,7 +162,7 @@ public class PermissionListActivity extends BasePermissionActivity {
             if (Settings.canDrawOverlays(PermissionListActivity.this)) {
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
-                SessionManager.setStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.PERMISSION_GRANTED.name());
+                setStringSetting(PermissionListActivity.this, PERMISSION_DRAW_OVER_OTHER_APPS, PermissionRequestStatus.PERMISSION_GRANTED.name());
                 Toast.makeText(this,
                         "Draw over other app permission is granted.",
                         Toast.LENGTH_SHORT).show();

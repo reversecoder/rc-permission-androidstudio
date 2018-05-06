@@ -5,9 +5,9 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="permission_request_is_not_sent">@android:color/white</color>
-    <color name="permission_status_granted">#4CAF50</color>
-    <color name="permission_status_denied_once">#E57373</color>
-    <color name="permission_status_denied_forever">#F44336</color>
-    <color name="permission_status_rationale">#FFEB3B</color>
+    <color name="permission_status_granted">#9cf99f</color>
+    <color name="permission_status_denied_once">#f79b9b</color>
+    <color name="permission_status_denied_forever">#f76156</color>
+    <color name="permission_status_rationale">#f5ec9a</color>
 
 </resources>
